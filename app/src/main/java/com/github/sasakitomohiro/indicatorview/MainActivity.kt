@@ -1,7 +1,10 @@
 package com.github.sasakitomohiro.indicatorview
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.github.sasakitomohiro.indicatorview.databinding.ActivityMainBinding
 
@@ -13,6 +16,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding
+        val view = View(this).apply {
+            val viewLayoutParams = ViewGroup.LayoutParams(20, 20)
+            layoutParams = viewLayoutParams
+            setBackgroundColor(Color.BLACK)
+        }
+        val view2 = View(this).apply {
+            val viewLayoutParams = ViewGroup.LayoutParams(20, 20)
+            layoutParams = viewLayoutParams
+            setBackgroundColor(Color.RED)
+        }
+        with(binding.indicatorFrame) {
+            addView(view)
+            addView(view2, 0)
+        }
     }
 }
