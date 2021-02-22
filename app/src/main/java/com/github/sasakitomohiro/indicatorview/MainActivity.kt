@@ -18,5 +18,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding.indicator.count = 5
+        binding.indicator.selectedIndex = 1
     }
 }

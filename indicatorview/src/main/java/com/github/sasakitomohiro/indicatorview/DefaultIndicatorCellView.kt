@@ -34,5 +34,6 @@ class DefaultIndicatorCellView @JvmOverloads constructor(
         layoutParams = LinearLayout.LayoutParams(20, 20).apply {
             setMargins(20)
         }
+        setBackgroundResource(R.drawable.indicator_cell_state)
     }
 }
