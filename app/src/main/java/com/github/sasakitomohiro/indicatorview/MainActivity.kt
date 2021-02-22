@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        with(binding.indicatorFrame) {
+        with(binding.indicator) {
             items.forEach {
                 addView(it, LinearLayout.LayoutParams(20, 20))
             }
