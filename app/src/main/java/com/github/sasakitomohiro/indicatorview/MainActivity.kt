@@ -1,11 +1,11 @@
 package com.github.sasakitomohiro.indicatorview
 
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.github.sasakitomohiro.indicatorview.databinding.ActivityMainBinding
 
@@ -17,19 +17,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val view = View(this).apply {
-            val viewLayoutParams = ViewGroup.LayoutParams(20, 20)
-            layoutParams = viewLayoutParams
-            setBackgroundColor(Color.BLACK)
-        }
-        val view2 = View(this).apply {
-            val viewLayoutParams = ViewGroup.LayoutParams(20, 20)
-            layoutParams = viewLayoutParams
-            setBackgroundColor(Color.RED)
+        val items = (0..10).mapIndexed { index, i ->
+            View(this).apply {
+                val viewLayoutParams = ViewGroup.LayoutParams(20, 20)
+                layoutParams = viewLayoutParams
+                if (index % 2 == 0) {
+                    setBackgroundColor(Color.RED)
+                } else {
+                    setBackgroundColor(Color.BLACK)
+                }
+            }
         }
         with(binding.indicatorFrame) {
-            addView(view, FrameLayout.LayoutParams(20, 20))
-            addView(view2, FrameLayout.LayoutParams(20, 20))
+            items.forEach {
+                addView(it, LinearLayout.LayoutParams(20, 20))
+            }
         }
     }
 }
