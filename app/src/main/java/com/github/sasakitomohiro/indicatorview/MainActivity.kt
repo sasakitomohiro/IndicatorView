@@ -17,21 +17,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val items = (0..10).mapIndexed { index, i ->
-            View(this).apply {
-                val viewLayoutParams = ViewGroup.LayoutParams(20, 20)
-                layoutParams = viewLayoutParams
-                if (index % 2 == 0) {
-                    setBackgroundColor(Color.RED)
-                } else {
-                    setBackgroundColor(Color.BLACK)
-                }
-            }
-        }
-        with(binding.indicator) {
-            items.forEach {
-                addView(it, LinearLayout.LayoutParams(20, 20))
-            }
-        }
+        binding.indicator.count = 5
     }
 }
