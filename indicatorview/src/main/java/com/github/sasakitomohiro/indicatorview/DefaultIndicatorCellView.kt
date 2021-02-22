@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 
 class DefaultIndicatorCellView @JvmOverloads constructor(
@@ -30,7 +31,8 @@ class DefaultIndicatorCellView @JvmOverloads constructor(
 
     init {
         setBackgroundColor(Color.GRAY)
-        layoutParams = LinearLayout.LayoutParams(20, 20)
-        setPadding(20)
+        layoutParams = LinearLayout.LayoutParams(20, 20).apply {
+            setMargins(20)
+        }
     }
 }
