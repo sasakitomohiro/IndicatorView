@@ -1,2 +1,3 @@
+include ':indicatorview'
 include ':app'
 rootProject.name = "IndicatorView"
