@@ -19,5 +19,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.indicator.count = 5
         binding.indicator.selectedIndex = 1
+        binding.prev.setOnClickListener {
+            binding.indicator.previous()
+        }
+        binding.next.setOnClickListener {
+            binding.indicator.next()
+        }
     }
 }
