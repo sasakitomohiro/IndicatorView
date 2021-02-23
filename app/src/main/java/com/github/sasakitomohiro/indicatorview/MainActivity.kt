@@ -2,6 +2,7 @@ package com.github.sasakitomohiro.indicatorview
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnLayout
 import androidx.databinding.DataBindingUtil
 import com.github.sasakitomohiro.indicatorview.databinding.ActivityMainBinding
 
@@ -13,8 +14,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.indicator.count = 5
-        binding.indicator.selectedIndex = 1
+        binding.root.doOnLayout {
+            binding.indicator.count = 5
+            binding.indicator.selectedIndex = 1
+        }
         binding.prev.setOnClickListener {
             binding.indicator.previous()
         }

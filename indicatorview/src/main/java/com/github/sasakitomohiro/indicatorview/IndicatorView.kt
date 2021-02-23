@@ -1,7 +1,6 @@
 package com.github.sasakitomohiro.indicatorview
 
 import android.content.Context
-import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -33,6 +32,8 @@ class IndicatorView @JvmOverloads constructor(
             field = value
             addIndicatorCell()
         }
+
+    var cellSize: Int = 0
 
     private val cells = mutableListOf<View>()
 
@@ -72,10 +73,33 @@ class IndicatorView @JvmOverloads constructor(
 
     private fun addIndicatorCell() {
         initialize()
+        val cellWidth = calcCellWidth()
         for (i in 0 until count) {
-            val cell = factory.create(context = context)
+            val cellLayoutParams = LayoutParams(cellWidth, cellWidth)
+            if (i != 0) {
+                cellLayoutParams.leftMargin = cellWidth
+            }
+            val cell = factory.create(context = context).apply {
+                layoutParams = cellLayoutParams
+            }
             cells.add(cell)
             addView(cell)
         }
+    }
+
+    private fun calcCellWidth(): Int {
+        val layoutParams = layoutParams ?: return width
+        val viewWidth =
+            if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) {
+                (parent as View).width
+            } else width
+        return (viewWidth / 2) / count
+    }
+
+    private fun calcHeight(): Int {
+        val layoutParams = layoutParams ?: return height
+        return if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) {
+            LayoutParams.WRAP_CONTENT
+        } else height
     }
 }
