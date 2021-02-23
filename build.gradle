@@ -1,6 +1,23 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.kotlin_version = "1.4.21"
+    ext.configs = [
+            versionName: "0.0.1",
+            versionCode: 1,
+            compileSdkVersion: 30,
+            minSdkVersion: 23,
+            targetSdkVersion: 30,
+            groupId: "com.github.sasakitomohiro",
+            artifactId: "indicatorview",
+            description: "IndicatorView",
+            siteUrl: "https://github.com/sasakitomohiro/IndicatorView",
+            gitUrl: "https://github.com/sasakitomohiro/IndicatorView.git",
+            developerId: "t-ssk",
+            developerName: "TomohiroSasaki",
+            developerEmail: "t0m0.piii.12.07@gmail.com",
+            licenseName: "The Apache Software License, Version 2.0",
+            licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    ]
     repositories {
         google()
         jcenter()
