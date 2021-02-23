@@ -6,6 +6,16 @@
 
 ## Usage
 
+### dependency
+
+```build.gradle
+dependencies {
+    implementation 'com.github.sasakitomohiro:indicatorview:latest'
+}
+```
+
+### sample
+
 ```xml
 <com.github.sasakitomohiro.indicatorview.IndicatorView
             android:id="@+id/indicator"
