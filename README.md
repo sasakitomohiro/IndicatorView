@@ -6,6 +6,13 @@
 
 ## Usage
 
+### dependency
+```
+dependencies {
+    implementation 'com.github.sasakitomohiro:indicatorview:latest'
+}
+```
+
 ```xml
 <com.github.sasakitomohiro.indicatorview.IndicatorView
             android:id="@+id/indicator"
