@@ -1,5 +1,7 @@
 # IndicatorView
 
+<img src="indicator.gif" />
+
 ## Usage
 
 ```xml
