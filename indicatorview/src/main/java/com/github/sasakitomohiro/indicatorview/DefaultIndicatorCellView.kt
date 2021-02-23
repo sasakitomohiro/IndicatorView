@@ -1,12 +1,8 @@
 package com.github.sasakitomohiro.indicatorview
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
-import android.widget.LinearLayout
-import androidx.core.view.setMargins
-import androidx.core.view.setPadding
 
 class DefaultIndicatorCellView @JvmOverloads constructor(
     context: Context,
@@ -30,7 +26,6 @@ class DefaultIndicatorCellView @JvmOverloads constructor(
     }
 
     init {
-        setBackgroundColor(Color.GRAY)
         setBackgroundResource(R.drawable.indicator_cell_state)
     }
 }
