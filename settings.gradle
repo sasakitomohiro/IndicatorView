@@ -1,3 +1,1 @@
-include ':indicatorview'
-include ':app'
-rootProject.name = "IndicatorView"
+include ':app', ':indicatorview'
