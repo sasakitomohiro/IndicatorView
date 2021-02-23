@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.IntRange
 
 class IndicatorView @JvmOverloads constructor(
     context: Context,
@@ -27,13 +28,23 @@ class IndicatorView @JvmOverloads constructor(
             cells[value].isSelected = true
         }
 
+    @IntRange(from = 0)
     var count: Int = 0
         set(value) {
             field = value
             addIndicatorCell()
         }
 
+    @IntRange(from = 0)
     var cellSize: Int = 0
+        get() {
+            if (field > 0) return field
+            val layoutParams = layoutParams ?: return LayoutParams.WRAP_CONTENT
+
+            val viewWidth = if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
+            field = (viewWidth / 2) / count
+            return field
+        }
 
     private val cells = mutableListOf<View>()
 
@@ -42,8 +53,7 @@ class IndicatorView @JvmOverloads constructor(
     }
 
     override fun setOrientation(orientation: Int) {
-        super.setOrientation(orientation)
-        addIndicatorCell()
+        // do nothing
     }
 
     fun setIndicatorCellFactory(factory: IndicatorCellFactory<View>) {
@@ -65,6 +75,10 @@ class IndicatorView @JvmOverloads constructor(
         return selectedIndex
     }
 
+    fun refresh() {
+        addIndicatorCell()
+    }
+
     private fun initialize() {
         removeAllViews()
         cells.clear()
@@ -73,11 +87,10 @@ class IndicatorView @JvmOverloads constructor(
 
     private fun addIndicatorCell() {
         initialize()
-        val cellWidth = calcCellWidth()
         for (i in 0 until count) {
-            val cellLayoutParams = LayoutParams(cellWidth, cellWidth)
+            val cellLayoutParams = LayoutParams(cellSize, cellSize)
             if (i != 0) {
-                cellLayoutParams.leftMargin = cellWidth
+                cellLayoutParams.leftMargin = cellSize
             }
             val cell = factory.create(context = context).apply {
                 layoutParams = cellLayoutParams
@@ -85,21 +98,5 @@ class IndicatorView @JvmOverloads constructor(
             cells.add(cell)
             addView(cell)
         }
-    }
-
-    private fun calcCellWidth(): Int {
-        val layoutParams = layoutParams ?: return width
-        val viewWidth =
-            if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) {
-                (parent as View).width
-            } else width
-        return (viewWidth / 2) / count
-    }
-
-    private fun calcHeight(): Int {
-        val layoutParams = layoutParams ?: return height
-        return if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) {
-            LayoutParams.WRAP_CONTENT
-        } else height
     }
 }

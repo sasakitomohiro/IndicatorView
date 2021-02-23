@@ -16,13 +16,23 @@ class MainActivity : AppCompatActivity() {
 
         binding.root.doOnLayout {
             binding.indicator.count = 5
-            binding.indicator.selectedIndex = 1
+            binding.indicator.selectedIndex = 0
         }
         binding.prev.setOnClickListener {
             binding.indicator.previous()
         }
         binding.next.setOnClickListener {
             binding.indicator.next()
+        }
+        binding.small.setOnClickListener {
+            binding.indicator.cellSize = 20
+            binding.indicator.refresh()
+            binding.indicator.selectedIndex = 0
+        }
+        binding.large.setOnClickListener {
+            binding.indicator.cellSize = 0
+            binding.indicator.refresh()
+            binding.indicator.selectedIndex = 0
         }
     }
 }
