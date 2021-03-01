@@ -2,6 +2,7 @@ package com.github.sasakitomohiro.indicatorview
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.IntRange
@@ -20,16 +21,22 @@ class IndicatorView @JvmOverloads constructor(
 
     var selectedIndex = -1
         set(value) {
-            if (value < 0 || cells.size < 1 || cells.size - 1 < value) return
+            if (value < 0 || count < 1 || count - 1 < value) return
+            val state =
+                if (field > value) State.PREVIOUS else if (field < value) State.NEXT else State.NONE
             field = value
-            cells.forEachIndexed { cellIndex, view ->
-                if (view.isSelected && value != cellIndex) view.isSelected = false
-            }
-            cells[value].isSelected = true
+            selectCell(state)
         }
 
     @IntRange(from = 0)
     var count: Int = 0
+        set(value) {
+            field = value
+            addIndicatorCell()
+        }
+
+    @IntRange(from = 0)
+    var maxVisibleCount = 0
         set(value) {
             field = value
             addIndicatorCell()
@@ -41,7 +48,8 @@ class IndicatorView @JvmOverloads constructor(
             if (field > 0) return field
             val layoutParams = layoutParams ?: return LayoutParams.WRAP_CONTENT
 
-            val viewWidth = if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
+            val viewWidth =
+                if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
             field = (viewWidth / 2) / count
             return field
         }
@@ -63,7 +71,7 @@ class IndicatorView @JvmOverloads constructor(
 
     fun next(): Int {
         val nextIndex = selectedIndex + 1
-        if (cells.size - 1 < nextIndex) return selectedIndex
+        if (count - 1 < nextIndex) return selectedIndex
         selectedIndex = nextIndex
         return selectedIndex
     }
@@ -84,15 +92,20 @@ class IndicatorView @JvmOverloads constructor(
     private fun initialize() {
         removeAllViews()
         cells.clear()
-        selectedIndex = -1
+        if (selectedIndex != -1 && count <= selectedIndex) {
+            selectedIndex = -1
+        }
     }
 
     private fun addIndicatorCell() {
         initialize()
-        for (i in 0 until count) {
+        val visibleCellCount =
+            if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
+        for (i in 0 until visibleCellCount) {
             val cellLayoutParams = LayoutParams(cellSize, cellSize)
             if (i != 0) {
-                cellLayoutParams.leftMargin = cellSize
+                cellLayoutParams.leftMargin = this.cellSize
+                cellLayoutParams.gravity = Gravity.CENTER_VERTICAL
             }
             val cell = factory.create(context = context).apply {
                 layoutParams = cellLayoutParams
@@ -100,5 +113,34 @@ class IndicatorView @JvmOverloads constructor(
             cells.add(cell)
             addView(cell)
         }
+        selectCell(State.NONE)
+    }
+
+    private fun selectCell(state: State) {
+        val prevIndex = cells.indexOfFirst { it.isSelected }
+        cells.forEach {
+            if (it.isSelected) it.isSelected = false
+        }
+
+        when (state) {
+            State.PREVIOUS -> {
+                val index = if (prevIndex == 0) prevIndex else prevIndex - 1
+
+                cells.getOrNull(index)?.isSelected = true
+            }
+            State.NEXT -> {
+                val index = if (prevIndex == maxVisibleCount - 1) prevIndex else prevIndex + 1
+                cells.getOrNull(index)?.isSelected = true
+            }
+            State.NONE -> {
+                cells.getOrNull(prevIndex)?.isSelected = true
+            }
+        }
+    }
+
+    private enum class State {
+        PREVIOUS,
+        NEXT,
+        NONE
     }
 }
