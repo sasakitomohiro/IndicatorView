@@ -22,8 +22,10 @@ class IndicatorView @JvmOverloads constructor(
     var selectedIndex = -1
         set(value) {
             if (value < 0 || count < 1 || count - 1 < value) return
+            val state =
+                if (field > value) State.PREVIOUS else if (field < value) State.NEXT else State.NONE
             field = value
-            selectCell()
+            selectCell(state)
         }
 
     @IntRange(from = 0)
@@ -46,7 +48,8 @@ class IndicatorView @JvmOverloads constructor(
             if (field > 0) return field
             val layoutParams = layoutParams ?: return LayoutParams.WRAP_CONTENT
 
-            val viewWidth = if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
+            val viewWidth =
+                if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
             field = (viewWidth / 2) / count
             return field
         }
@@ -96,14 +99,13 @@ class IndicatorView @JvmOverloads constructor(
 
     private fun addIndicatorCell() {
         initialize()
-        val visibleCellCount = if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
+        val visibleCellCount =
+            if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
         for (i in 0 until visibleCellCount) {
-            val cellSize =
-                if (maxVisibleCount == visibleCellCount && i == visibleCellCount - 1) cellSize / 2 else cellSize
             val cellLayoutParams = LayoutParams(cellSize, cellSize)
             if (i != 0) {
                 cellLayoutParams.leftMargin = this.cellSize
-                cellLayoutParams.gravity =  Gravity.CENTER_VERTICAL
+                cellLayoutParams.gravity = Gravity.CENTER_VERTICAL
             }
             val cell = factory.create(context = context).apply {
                 layoutParams = cellLayoutParams
@@ -111,16 +113,34 @@ class IndicatorView @JvmOverloads constructor(
             cells.add(cell)
             addView(cell)
         }
-        selectCell()
+        selectCell(State.NONE)
     }
 
-    private fun selectCell() {
-        cells.forEachIndexed { cellIndex, view ->
-            if (view.isSelected && selectedIndex != cellIndex) view.isSelected = false
+    private fun selectCell(state: State) {
+        val prevIndex = cells.indexOfFirst { it.isSelected }
+        cells.forEach {
+            if (it.isSelected) it.isSelected = false
         }
-        val cellIndex =
-            if (selectedIndex < count && maxVisibleCount > 0 && selectedIndex > maxVisibleCount - 1) maxVisibleCount - 1 else selectedIndex
-        val cell = cells.getOrNull(cellIndex)
-        cell?.isSelected = true
+
+        when (state) {
+            State.PREVIOUS -> {
+                val index = if (prevIndex == 0) prevIndex else prevIndex - 1
+
+                cells.getOrNull(index)?.isSelected = true
+            }
+            State.NEXT -> {
+                val index = if (prevIndex == maxVisibleCount - 1) prevIndex else prevIndex + 1
+                cells.getOrNull(index)?.isSelected = true
+            }
+            State.NONE -> {
+                cells.getOrNull(prevIndex)?.isSelected = true
+            }
+        }
+    }
+
+    private enum class State {
+        PREVIOUS,
+        NEXT,
+        NONE
     }
 }
