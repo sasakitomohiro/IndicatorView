@@ -2,6 +2,7 @@ package com.github.sasakitomohiro.indicatorview
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.IntRange
@@ -20,16 +21,20 @@ class IndicatorView @JvmOverloads constructor(
 
     var selectedIndex = -1
         set(value) {
-            if (value < 0 || cells.size < 1 || cells.size - 1 < value) return
+            if (value < 0 || count < 1 || count - 1 < value) return
             field = value
-            cells.forEachIndexed { cellIndex, view ->
-                if (view.isSelected && value != cellIndex) view.isSelected = false
-            }
-            cells[value].isSelected = true
+            selectCell()
         }
 
     @IntRange(from = 0)
     var count: Int = 0
+        set(value) {
+            field = value
+            addIndicatorCell()
+        }
+
+    @IntRange(from = 0)
+    var maxVisibleCount = 0
         set(value) {
             field = value
             addIndicatorCell()
@@ -63,7 +68,7 @@ class IndicatorView @JvmOverloads constructor(
 
     fun next(): Int {
         val nextIndex = selectedIndex + 1
-        if (cells.size - 1 < nextIndex) return selectedIndex
+        if (count - 1 < nextIndex) return selectedIndex
         selectedIndex = nextIndex
         return selectedIndex
     }
@@ -84,15 +89,21 @@ class IndicatorView @JvmOverloads constructor(
     private fun initialize() {
         removeAllViews()
         cells.clear()
-        selectedIndex = -1
+        if (selectedIndex != -1 && count <= selectedIndex) {
+            selectedIndex = -1
+        }
     }
 
     private fun addIndicatorCell() {
         initialize()
-        for (i in 0 until count) {
+        val visibleCellCount = if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
+        for (i in 0 until visibleCellCount) {
+            val cellSize =
+                if (maxVisibleCount == visibleCellCount && i == visibleCellCount - 1) cellSize / 2 else cellSize
             val cellLayoutParams = LayoutParams(cellSize, cellSize)
             if (i != 0) {
-                cellLayoutParams.leftMargin = cellSize
+                cellLayoutParams.leftMargin = this.cellSize
+                cellLayoutParams.gravity =  Gravity.CENTER_VERTICAL
             }
             val cell = factory.create(context = context).apply {
                 layoutParams = cellLayoutParams
@@ -100,5 +111,16 @@ class IndicatorView @JvmOverloads constructor(
             cells.add(cell)
             addView(cell)
         }
+        selectCell()
+    }
+
+    private fun selectCell() {
+        cells.forEachIndexed { cellIndex, view ->
+            if (view.isSelected && selectedIndex != cellIndex) view.isSelected = false
+        }
+        val cellIndex =
+            if (selectedIndex < count && maxVisibleCount > 0 && selectedIndex > maxVisibleCount - 1) maxVisibleCount - 1 else selectedIndex
+        val cell = cells.getOrNull(cellIndex)
+        cell?.isSelected = true
     }
 }
