@@ -15,12 +15,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.root.doOnLayout {
-            binding.indicator.count = 10
-            binding.indicator.maxVisibleCount = 6
-            binding.indicator.selectedIndex = 0
-            setCount(0)
-        }
+        binding.indicator.count = 20
+        binding.indicator.maxVisibleCount = 8
+        binding.indicator.selectedIndex = 0
+        setCount(0)
         binding.prev.setOnClickListener {
             val selectedIndex = binding.indicator.previous()
             setCount(selectedIndex)
