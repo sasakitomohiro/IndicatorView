@@ -80,6 +80,8 @@ class IndicatorView @JvmOverloads constructor(
 
     fun getSelectedCell(): View? = cells.firstOrNull { it.isSelected }
 
+    fun getCell(index: Int): View? = cells.getOrNull(index)
+
     fun refresh() {
         addIndicatorCell()
     }
