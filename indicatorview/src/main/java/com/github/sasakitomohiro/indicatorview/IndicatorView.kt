@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.IntRange
+import androidx.core.view.doOnLayout
 
 class IndicatorView @JvmOverloads constructor(
     context: Context,
@@ -44,15 +45,9 @@ class IndicatorView @JvmOverloads constructor(
 
     @IntRange(from = 0)
     var cellSize: Int = 0
-        get() {
-            if (field > 0) return field
-            val layoutParams = layoutParams ?: return LayoutParams.WRAP_CONTENT
 
-            val viewWidth =
-                if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
-            field = (viewWidth / 2) / count
-            return field
-        }
+    @IntRange(from = 0)
+    var maxCellSize = 12.dpToPx()
 
     private val cells = mutableListOf<View>()
 
@@ -85,6 +80,8 @@ class IndicatorView @JvmOverloads constructor(
 
     fun getSelectedCell(): View? = cells.firstOrNull { it.isSelected }
 
+    fun getCell(index: Int): View? = cells.getOrNull(index)
+
     fun refresh() {
         addIndicatorCell()
     }
@@ -98,42 +95,52 @@ class IndicatorView @JvmOverloads constructor(
     }
 
     private fun addIndicatorCell() {
-        initialize()
-        val visibleCellCount =
-            if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
-        for (i in 0 until visibleCellCount) {
-            val cellLayoutParams = LayoutParams(cellSize, cellSize)
-            if (i != 0) {
-                cellLayoutParams.leftMargin = this.cellSize
-                cellLayoutParams.gravity = Gravity.CENTER_VERTICAL
+        (parent as? View)?.doOnLayout {
+            initialize()
+            val viewWidth =
+                if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
+            val calcCellSize = (viewWidth / 2) / count
+            cellSize = if (calcCellSize > maxCellSize) maxCellSize else calcCellSize
+
+            val visibleCellCount =
+                if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
+            for (i in 0 until visibleCellCount) {
+                val cellLayoutParams = LayoutParams(cellSize, cellSize)
+                if (i != 0) {
+                    cellLayoutParams.leftMargin = this.cellSize
+                    cellLayoutParams.gravity = Gravity.CENTER_VERTICAL
+                }
+                val cell = factory.create(context = context).apply {
+                    layoutParams = cellLayoutParams
+                }
+                cells.add(cell)
+                addView(cell)
             }
-            val cell = factory.create(context = context).apply {
-                layoutParams = cellLayoutParams
-            }
-            cells.add(cell)
-            addView(cell)
+            selectCell(State.NONE)
         }
-        selectCell(State.NONE)
     }
 
     private fun selectCell(state: State) {
-        val prevIndex = cells.indexOfFirst { it.isSelected }
-        cells.forEach {
-            if (it.isSelected) it.isSelected = false
-        }
-
-        when (state) {
-            State.PREVIOUS -> {
-                val index = if (prevIndex == 0) prevIndex else prevIndex - 1
-
-                cells.getOrNull(index)?.isSelected = true
+        (parent as? View)?.doOnLayout {
+            val prevIndex = cells.indexOfFirst { it.isSelected }
+            cells.forEach {
+                if (it.isSelected) it.isSelected = false
             }
-            State.NEXT -> {
-                val index = if (prevIndex == maxVisibleCount - 1) prevIndex else prevIndex + 1
-                cells.getOrNull(index)?.isSelected = true
-            }
-            State.NONE -> {
-                cells.getOrNull(prevIndex)?.isSelected = true
+
+            when (state) {
+                State.PREVIOUS -> {
+                    val index = if (prevIndex == 0) prevIndex else prevIndex - 1
+
+                    cells.getOrNull(index)?.isSelected = true
+                }
+                State.NEXT -> {
+                    val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
+                    val index = if (prevIndex == visibleCount - 1) prevIndex else prevIndex + 1
+                    cells.getOrNull(index)?.isSelected = true
+                }
+                State.NONE -> {
+                    cells.getOrNull(prevIndex)?.isSelected = true
+                }
             }
         }
     }
