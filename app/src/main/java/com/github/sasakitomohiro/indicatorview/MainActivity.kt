@@ -17,7 +17,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.indicator.count = 20
         binding.indicator.maxVisibleCount = 8
-        binding.indicator.selectedIndex = 0
+        binding.indicator.doOnLayout {
+            binding.indicator.selectedIndex = 0
+        }
         setCount(0)
         binding.prev.setOnClickListener {
             val selectedIndex = binding.indicator.previous()
@@ -26,18 +28,6 @@ class MainActivity : AppCompatActivity() {
         binding.next.setOnClickListener {
             val selectedIndex = binding.indicator.next()
             setCount(selectedIndex)
-        }
-        binding.small.setOnClickListener {
-            binding.indicator.cellSize = 20
-            binding.indicator.refresh()
-            binding.indicator.selectedIndex = 0
-            setCount(0)
-        }
-        binding.large.setOnClickListener {
-            binding.indicator.cellSize = 0
-            binding.indicator.refresh()
-            binding.indicator.selectedIndex = 0
-            setCount(0)
         }
     }
 

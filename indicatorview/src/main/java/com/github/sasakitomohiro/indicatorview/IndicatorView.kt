@@ -100,7 +100,6 @@ class IndicatorView @JvmOverloads constructor(
             val calcCellSize = (viewWidth / 2) / count
             cellSize = if (calcCellSize > maxCellSize) maxCellSize else calcCellSize
 
-
             val visibleCellCount =
                 if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
             for (i in 0 until visibleCellCount) {

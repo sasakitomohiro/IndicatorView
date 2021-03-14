@@ -8,24 +8,6 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <Button
-            android:id="@+id/small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SMALL"
-            app:layout_constraintEnd_toStartOf="@id/large"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/large"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LARGE"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/small"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <com.github.sasakitomohiro.indicatorview.IndicatorView
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
@@ -42,7 +24,7 @@
             app:layout_constraintBottom_toTopOf="@id/barrier"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:text="count: 10" />
+            tools:text="0/10" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier"
