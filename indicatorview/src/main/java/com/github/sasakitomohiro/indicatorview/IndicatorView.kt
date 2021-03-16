@@ -43,11 +43,17 @@ class IndicatorView @JvmOverloads constructor(
             addIndicatorCell()
         }
 
-    @IntRange(from = 0)
-    var cellSize: Int = 0
+    private var typedArray = context.obtainStyledAttributes(
+        attrs,
+        R.styleable.IndicatorView
+    )
 
-    @IntRange(from = 0)
-    var maxCellSize = 12.dpToPx()
+    private var cellWidth =
+        typedArray.getDimension(R.styleable.IndicatorView_cellWidth, 8.dpToPx()).toInt()
+    private var cellHeight =
+        typedArray.getDimension(R.styleable.IndicatorView_cellHeight, 8.dpToPx()).toInt()
+    private var cellMargin =
+        typedArray.getDimension(R.styleable.IndicatorView_cellMargin, 8.dpToPx()).toInt()
 
     private val cells = mutableListOf<View>()
 
@@ -86,6 +92,18 @@ class IndicatorView @JvmOverloads constructor(
         addIndicatorCell()
     }
 
+    fun setCellWidth(cellWidth: Int) {
+        this.cellWidth = cellWidth
+    }
+
+    fun setCellHeight(cellHeight: Int) {
+        this.cellHeight = cellHeight
+    }
+
+    fun setCellMargin(cellMargin: Int) {
+        this.cellMargin = cellMargin
+    }
+
     private fun initialize() {
         removeAllViews()
         cells.clear()
@@ -97,17 +115,13 @@ class IndicatorView @JvmOverloads constructor(
     private fun addIndicatorCell() {
         (parent as? View)?.doOnLayout {
             initialize()
-            val viewWidth =
-                if (layoutParams.width == LayoutParams.WRAP_CONTENT || layoutParams.width == LayoutParams.MATCH_PARENT) (parent as View).width else width
-            val calcCellSize = (viewWidth / 2) / count
-            cellSize = if (calcCellSize > maxCellSize) maxCellSize else calcCellSize
 
             val visibleCellCount =
                 if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
             for (i in 0 until visibleCellCount) {
-                val cellLayoutParams = LayoutParams(cellSize, cellSize)
+                val cellLayoutParams = LayoutParams(cellWidth, cellHeight)
                 if (i != 0) {
-                    cellLayoutParams.leftMargin = this.cellSize
+                    cellLayoutParams.leftMargin = cellMargin
                     cellLayoutParams.gravity = Gravity.CENTER_VERTICAL
                 }
                 val cell = factory.create(context = context).apply {
