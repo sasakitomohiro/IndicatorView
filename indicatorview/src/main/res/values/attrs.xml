@@ -4,5 +4,7 @@
         <attr name="cellWidth" format="dimension" />
         <attr name="cellHeight" format="dimension" />
         <attr name="cellMargin" format="dimension" />
+        <attr name="selectedCellColor" format="color" />
+        <attr name="defaultCellColor" format="color" />
     </declare-styleable>
 </resources>

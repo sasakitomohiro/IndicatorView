@@ -1,10 +1,13 @@
 package com.github.sasakitomohiro.indicatorview
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
 import androidx.core.view.doOnLayout
 
@@ -54,6 +57,10 @@ class IndicatorView @JvmOverloads constructor(
         typedArray.getDimension(R.styleable.IndicatorView_cellHeight, 8.dpToPx()).toInt()
     private var cellMargin =
         typedArray.getDimension(R.styleable.IndicatorView_cellMargin, 8.dpToPx()).toInt()
+    private var selectedCellColor =
+        typedArray.getColor(R.styleable.IndicatorView_selectedCellColor, Color.BLACK)
+    private var defaultCellColor =
+        typedArray.getColor(R.styleable.IndicatorView_defaultCellColor, Color.GRAY)
 
     private val cells = mutableListOf<View>()
 
@@ -104,6 +111,16 @@ class IndicatorView @JvmOverloads constructor(
         this.cellMargin = cellMargin
     }
 
+    fun setSelectedCellColor(@ColorInt color: Int) {
+        selectedCellColor = color
+        addIndicatorCell()
+    }
+
+    fun setDefaultCellColor(@ColorInt color: Int) {
+        defaultCellColor = color
+        addIndicatorCell()
+    }
+
     private fun initialize() {
         removeAllViews()
         cells.clear()
@@ -113,6 +130,16 @@ class IndicatorView @JvmOverloads constructor(
     }
 
     private fun addIndicatorCell() {
+        val states = arrayOf(
+            intArrayOf(-android.R.attr.state_selected),
+            intArrayOf(android.R.attr.state_selected)
+        )
+        val colors = intArrayOf(
+            defaultCellColor,
+            selectedCellColor
+        )
+        val colorStateList = ColorStateList(states, colors)
+
         (parent as? View)?.doOnLayout {
             initialize()
 
@@ -126,6 +153,7 @@ class IndicatorView @JvmOverloads constructor(
                 }
                 val cell = factory.create(context = context).apply {
                     layoutParams = cellLayoutParams
+                    backgroundTintList = colorStateList
                 }
                 cells.add(cell)
                 addView(cell)
