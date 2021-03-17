@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
-import androidx.core.view.doOnLayout
 
 class IndicatorView @JvmOverloads constructor(
     context: Context,
@@ -140,50 +139,48 @@ class IndicatorView @JvmOverloads constructor(
         )
         val colorStateList = ColorStateList(states, colors)
 
-        (parent as? View)?.doOnLayout {
-            initialize()
+        initialize()
 
-            val visibleCellCount =
-                if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
-            for (i in 0 until visibleCellCount) {
-                val cellLayoutParams = LayoutParams(cellWidth, cellHeight)
-                if (i != 0) {
-                    cellLayoutParams.leftMargin = cellMargin
-                    cellLayoutParams.gravity = Gravity.CENTER_VERTICAL
-                }
-                val cell = factory.create(context = context).apply {
-                    layoutParams = cellLayoutParams
-                    backgroundTintList = colorStateList
-                }
-                cells.add(cell)
-                addView(cell)
+        val visibleCellCount =
+            if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
+        for (i in 0 until visibleCellCount) {
+            val cellLayoutParams = LayoutParams(cellWidth, cellHeight)
+            if (i != 0) {
+                cellLayoutParams.leftMargin = cellMargin
+                cellLayoutParams.gravity = Gravity.CENTER_VERTICAL
             }
-            selectCell(State.NONE)
+            val cell = factory.create(context = context).apply {
+                layoutParams = cellLayoutParams
+                backgroundTintList = colorStateList
+            }
+            cells.add(cell)
+            addView(cell)
         }
+        selectCell(State.NONE)
     }
 
     private fun selectCell(state: State) {
-        (parent as? View)?.doOnLayout {
-            val prevIndex = cells.indexOfFirst { it.isSelected }
-            cells.forEach {
-                if (it.isSelected) it.isSelected = false
+        val prevIndex = cells.indexOfFirst { it.isSelected }
+        cells.forEach {
+            if (it.isSelected) it.isSelected = false
+        }
+
+        when (state) {
+            State.PREVIOUS -> {
+                val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
+                val index =
+                    if (prevIndex == 0 || 0 > selectedIndex) 0 else if (selectedIndex > visibleCount - 1) visibleCount - 1 else selectedIndex
+
+                cells.getOrNull(index)?.isSelected = true
             }
-
-            when (state) {
-                State.PREVIOUS -> {
-                    val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
-                    val index = if (prevIndex == 0 || 0 > selectedIndex) 0 else if (selectedIndex > visibleCount - 1) visibleCount -1 else selectedIndex
-
-                    cells.getOrNull(index)?.isSelected = true
-                }
-                State.NEXT -> {
-                    val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
-                    val index = if (prevIndex == visibleCount - 1 || selectedIndex > visibleCount - 1) visibleCount - 1 else selectedIndex
-                    cells.getOrNull(index)?.isSelected = true
-                }
-                State.NONE -> {
-                    cells.getOrNull(prevIndex)?.isSelected = true
-                }
+            State.NEXT -> {
+                val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
+                val index =
+                    if (prevIndex == visibleCount - 1 || selectedIndex > visibleCount - 1) visibleCount - 1 else selectedIndex
+                cells.getOrNull(index)?.isSelected = true
+            }
+            State.NONE -> {
+                cells.getOrNull(prevIndex)?.isSelected = true
             }
         }
     }
