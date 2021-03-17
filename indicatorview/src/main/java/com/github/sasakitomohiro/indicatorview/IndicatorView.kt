@@ -171,13 +171,13 @@ class IndicatorView @JvmOverloads constructor(
 
             when (state) {
                 State.PREVIOUS -> {
-                    val index = if (prevIndex == 0) prevIndex else prevIndex - 1
+                    val index = if (prevIndex == 0 || 0 > selectedIndex) prevIndex else selectedIndex
 
                     cells.getOrNull(index)?.isSelected = true
                 }
                 State.NEXT -> {
                     val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
-                    val index = if (prevIndex == visibleCount - 1) prevIndex else prevIndex + 1
+                    val index = if (prevIndex == visibleCount - 1 || selectedIndex > visibleCount - 1) prevIndex else selectedIndex
                     cells.getOrNull(index)?.isSelected = true
                 }
                 State.NONE -> {
