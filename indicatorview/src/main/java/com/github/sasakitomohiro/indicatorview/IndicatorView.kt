@@ -162,13 +162,14 @@ class IndicatorView @JvmOverloads constructor(
     }
 
     private fun selectCell(state: State) {
-        val prevIndex = cells.indexOfFirst { it.isSelected }
         cells.forEach {
             if (it.isSelected) it.isSelected = false
         }
+        cells.getOrNull(selectedIndex)?.isSelected = true
 
         when (state) {
             State.PREVIOUS -> {
+                if (maxVisibleCount == 0 || count < maxVisibleCount) return
                 cells.forEach {
                     with(it.animate()) {
                         isAnimating.set(true)
@@ -180,9 +181,9 @@ class IndicatorView @JvmOverloads constructor(
                         start()
                     }
                 }
-                cells.getOrNull(selectedIndex)?.isSelected = true
             }
             State.NEXT -> {
+                if (maxVisibleCount == 0 || count < maxVisibleCount) return
                 cells.forEach {
                     with(it.animate()) {
                         isAnimating.set(true)
@@ -194,10 +195,9 @@ class IndicatorView @JvmOverloads constructor(
                         start()
                     }
                 }
-                cells.getOrNull(selectedIndex)?.isSelected = true
             }
             State.NONE -> {
-                cells.getOrNull(prevIndex)?.isSelected = true
+                // no-op
             }
         }
     }
