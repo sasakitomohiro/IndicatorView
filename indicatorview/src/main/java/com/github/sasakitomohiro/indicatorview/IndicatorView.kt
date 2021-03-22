@@ -6,9 +6,11 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
+import java.util.concurrent.atomic.AtomicBoolean
 
 class IndicatorView @JvmOverloads constructor(
     context: Context,
@@ -63,6 +65,8 @@ class IndicatorView @JvmOverloads constructor(
 
     private val cells = mutableListOf<View>()
 
+    private val isAnimating = AtomicBoolean(false)
+
     init {
         orientation = HORIZONTAL
     }
@@ -78,14 +82,14 @@ class IndicatorView @JvmOverloads constructor(
 
     fun next(): Int {
         val nextIndex = selectedIndex + 1
-        if (count - 1 < nextIndex) return selectedIndex
+        if (count - 1 < nextIndex || isAnimating.get()) return selectedIndex
         selectedIndex = nextIndex
         return selectedIndex
     }
 
     fun previous(): Int {
         val previousIndex = selectedIndex - 1
-        if (previousIndex < 0) return selectedIndex
+        if (previousIndex < 0 || isAnimating.get()) return selectedIndex
         selectedIndex = previousIndex
         return selectedIndex
     }
@@ -141,9 +145,7 @@ class IndicatorView @JvmOverloads constructor(
 
         initialize()
 
-        val visibleCellCount =
-            if (maxVisibleCount != 0 && maxVisibleCount < count) maxVisibleCount else count
-        for (i in 0 until visibleCellCount) {
+        for (i in 0 until count) {
             val cellLayoutParams = LayoutParams(cellWidth, cellHeight)
             if (i != 0) {
                 cellLayoutParams.leftMargin = cellMargin
@@ -167,17 +169,32 @@ class IndicatorView @JvmOverloads constructor(
 
         when (state) {
             State.PREVIOUS -> {
-                val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
-                val index =
-                    if (prevIndex == 0 || 0 > selectedIndex) 0 else if (selectedIndex > visibleCount - 1) visibleCount - 1 else selectedIndex
-
-                cells.getOrNull(index)?.isSelected = true
+                cells.forEach {
+                    with(it.animate()) {
+                        isAnimating.set(true)
+                        interpolator = LinearInterpolator()
+                        translationX(it.translationX + cellWidth + cellMargin)
+                        withEndAction {
+                            isAnimating.set(false)
+                        }
+                        start()
+                    }
+                }
+                cells.getOrNull(selectedIndex)?.isSelected = true
             }
             State.NEXT -> {
-                val visibleCount = if (maxVisibleCount == 0) count else maxVisibleCount
-                val index =
-                    if (prevIndex == visibleCount - 1 || selectedIndex > visibleCount - 1) visibleCount - 1 else selectedIndex
-                cells.getOrNull(index)?.isSelected = true
+                cells.forEach {
+                    with(it.animate()) {
+                        isAnimating.set(true)
+                        interpolator = LinearInterpolator()
+                        translationX(it.translationX - cellWidth - cellMargin)
+                        withEndAction {
+                            isAnimating.set(false)
+                        }
+                        start()
+                    }
+                }
+                cells.getOrNull(selectedIndex)?.isSelected = true
             }
             State.NONE -> {
                 cells.getOrNull(prevIndex)?.isSelected = true
