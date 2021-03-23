@@ -164,6 +164,12 @@ class IndicatorView @JvmOverloads constructor(
 
         initialize()
 
+        val calcWidth = if (maxVisibleCount != 0 && maxVisibleCount < count) {
+            maxVisibleCount * cellWidth + (maxVisibleCount - 1) * cellMargin
+        } else {
+            count * cellWidth + (maxVisibleCount - 1) * cellMargin
+        }
+        layoutParams.width = calcWidth
         for (i in 0 until count) {
             val cellLayoutParams = LayoutParams(cellWidth, cellHeight)
             if (i != 0) {
