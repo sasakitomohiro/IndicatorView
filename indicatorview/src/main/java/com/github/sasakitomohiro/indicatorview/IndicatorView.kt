@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
+import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
@@ -62,6 +63,10 @@ class IndicatorView @JvmOverloads constructor(
         typedArray.getColor(R.styleable.IndicatorView_selectedCellColor, Color.BLACK)
     private var defaultCellColor =
         typedArray.getColor(R.styleable.IndicatorView_defaultCellColor, Color.GRAY)
+
+    private var animationInterpolator: Interpolator = LinearInterpolator()
+    private var animationDuration = 0L
+    private var cellTranslationX: Float = 0f
 
     private val cells = mutableListOf<View>()
 
@@ -124,6 +129,20 @@ class IndicatorView @JvmOverloads constructor(
         addIndicatorCell()
     }
 
+    fun setInterpolator(interpolator: Interpolator) {
+        animationInterpolator = interpolator
+        cells.forEach {
+            it.animate().interpolator = interpolator
+        }
+    }
+
+    fun setAnimationDuration(duration: Long) {
+        animationDuration = duration
+        cells.forEach {
+            it.animate().duration = duration
+        }
+    }
+
     private fun initialize() {
         removeAllViews()
         cells.clear()
@@ -154,6 +173,7 @@ class IndicatorView @JvmOverloads constructor(
             val cell = factory.create(context = context).apply {
                 layoutParams = cellLayoutParams
                 backgroundTintList = colorStateList
+                animate().interpolator = animationInterpolator
             }
             cells.add(cell)
             addView(cell)
@@ -165,7 +185,9 @@ class IndicatorView @JvmOverloads constructor(
         cells.forEach {
             if (it.isSelected) it.isSelected = false
         }
+
         cells.getOrNull(selectedIndex)?.isSelected = true
+        if (selectedIndex == 0) return
 
         when (state) {
             State.PREVIOUS -> {
@@ -173,7 +195,6 @@ class IndicatorView @JvmOverloads constructor(
                 cells.forEach {
                     with(it.animate()) {
                         isAnimating.set(true)
-                        interpolator = LinearInterpolator()
                         translationX(it.translationX + cellWidth + cellMargin)
                         withEndAction {
                             isAnimating.set(false)
@@ -187,7 +208,6 @@ class IndicatorView @JvmOverloads constructor(
                 cells.forEach {
                     with(it.animate()) {
                         isAnimating.set(true)
-                        interpolator = LinearInterpolator()
                         translationX(it.translationX - cellWidth - cellMargin)
                         withEndAction {
                             isAnimating.set(false)
