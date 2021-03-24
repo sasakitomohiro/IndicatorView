@@ -10,6 +10,8 @@ import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
 
+const val NO_INDEX = -1
+
 class IndicatorView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -22,7 +24,7 @@ class IndicatorView @JvmOverloads constructor(
     @Suppress("UNCHECKED_CAST")
     private var factory = DefaultIndicatorCellView.Companion as IndicatorCellFactory<View>
 
-    var selectedIndex = -1
+    var selectedIndex = NO_INDEX
         set(value) {
             if (value < 0 || count < 1 || count - 1 < value) return
             val state =
@@ -123,9 +125,7 @@ class IndicatorView @JvmOverloads constructor(
     private fun initialize() {
         removeAllViews()
         cells.clear()
-        if (selectedIndex != -1 && count <= selectedIndex) {
-            selectedIndex = -1
-        }
+        selectedIndex = NO_INDEX
     }
 
     private fun addIndicatorCell() {
