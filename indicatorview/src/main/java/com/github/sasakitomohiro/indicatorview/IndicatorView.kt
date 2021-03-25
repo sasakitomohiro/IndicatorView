@@ -125,7 +125,7 @@ class IndicatorView @JvmOverloads constructor(
     private fun initialize() {
         removeAllViews()
         cells.clear()
-        selectedIndex = NO_INDEX
+        selectedIndex = 0
     }
 
     private fun addIndicatorCell() {
@@ -160,7 +160,9 @@ class IndicatorView @JvmOverloads constructor(
     }
 
     private fun selectCell(state: State) {
-        val prevIndex = cells.indexOfFirst { it.isSelected }
+        val prevIndex = cells.indexOfFirst { it.isSelected }.let {
+            if (it > -1) it else 0
+        }
         cells.forEach {
             if (it.isSelected) it.isSelected = false
         }
