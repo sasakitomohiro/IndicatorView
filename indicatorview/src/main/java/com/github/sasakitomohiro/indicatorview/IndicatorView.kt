@@ -125,7 +125,7 @@ class IndicatorView @JvmOverloads constructor(
     private fun initialize() {
         removeAllViews()
         cells.clear()
-        selectedIndex = NO_INDEX
+        selectedIndex = 0
     }
 
     private fun addIndicatorCell() {
