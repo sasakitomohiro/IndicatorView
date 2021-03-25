@@ -160,7 +160,7 @@ class IndicatorView @JvmOverloads constructor(
     }
 
     private fun selectCell(state: State) {
-        val prevIndex = cells.indexOfFirst { it.isSelected }
+        val prevIndex = if (cells.indexOfFirst { it.isSelected } > -1) cells.indexOfFirst { it.isSelected } else 0
         cells.forEach {
             if (it.isSelected) it.isSelected = false
         }
