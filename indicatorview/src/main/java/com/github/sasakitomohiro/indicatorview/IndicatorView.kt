@@ -27,7 +27,7 @@ class IndicatorView @JvmOverloads constructor(
     @Suppress("UNCHECKED_CAST")
     private var factory = DefaultIndicatorCellView.Companion as IndicatorCellFactory<View>
 
-    var selectedIndex = NO_INDEX
+    var currentIndex = NO_INDEX
         set(value) {
             if (value < 0 || count < 1 || count - 1 < value) return
             val state =
@@ -35,6 +35,8 @@ class IndicatorView @JvmOverloads constructor(
             field = value
             selectCell(state)
         }
+
+    private var visibleIndex = NO_INDEX
 
     @IntRange(from = 0)
     var count: Int = 0
@@ -88,17 +90,17 @@ class IndicatorView @JvmOverloads constructor(
     }
 
     fun next(): Int {
-        val nextIndex = selectedIndex + 1
-        if (count - 1 < nextIndex || isAnimating.get()) return selectedIndex
-        selectedIndex = nextIndex
-        return selectedIndex
+        val nextIndex = currentIndex + 1
+        if (count - 1 < nextIndex || isAnimating.get()) return currentIndex
+        currentIndex = nextIndex
+        return currentIndex
     }
 
     fun previous(): Int {
-        val previousIndex = selectedIndex - 1
-        if (previousIndex < 0 || isAnimating.get()) return selectedIndex
-        selectedIndex = previousIndex
-        return selectedIndex
+        val previousIndex = currentIndex - 1
+        if (previousIndex < 0 || isAnimating.get()) return currentIndex
+        currentIndex = previousIndex
+        return currentIndex
     }
 
     fun getSelectedCell(): View? = cells.firstOrNull { it.isSelected }
@@ -148,7 +150,7 @@ class IndicatorView @JvmOverloads constructor(
     private fun initialize() {
         removeAllViews()
         cells.clear()
-        selectedIndex = 0
+        currentIndex = 0
     }
 
     private fun addIndicatorCell() {
@@ -195,8 +197,8 @@ class IndicatorView @JvmOverloads constructor(
             if (it.isSelected) it.isSelected = false
         }
 
-        cells.getOrNull(selectedIndex)?.isSelected = true
-        if (selectedIndex == 0) return
+        cells.getOrNull(currentIndex)?.isSelected = true
+        if (currentIndex == 0) return
 
         when (state) {
             State.PREVIOUS -> {
@@ -230,6 +232,50 @@ class IndicatorView @JvmOverloads constructor(
             }
         }
     }
+
+//    private fun selectCell(state: State) {
+//        val prevIndex = cells.indexOfFirst { it.isSelected }.let {
+//            if (it > -1) it else 0
+//        }
+//        cells.forEach {
+//            if (it.isSelected) it.isSelected = false
+//        }
+//
+//        cells.getOrNull(currentIndex)?.isSelected = true
+//        if (currentIndex == 0) return
+//
+//        when (state) {
+//            State.PREVIOUS -> {
+//                if (maxVisibleCount == 0 || count < maxVisibleCount) return
+//                cells.forEach {
+//                    with(it.animate()) {
+//                        isAnimating.set(true)
+//                        translationX(it.translationX + cellWidth + cellMargin)
+//                        withEndAction {
+//                            isAnimating.set(false)
+//                        }
+//                        start()
+//                    }
+//                }
+//            }
+//            State.NEXT -> {
+//                if (maxVisibleCount == 0 || count < maxVisibleCount) return
+//                cells.forEach {
+//                    with(it.animate()) {
+//                        isAnimating.set(true)
+//                        translationX(it.translationX - cellWidth - cellMargin)
+//                        withEndAction {
+//                            isAnimating.set(false)
+//                        }
+//                        start()
+//                    }
+//                }
+//            }
+//            State.NONE -> {
+//                // no-op
+//            }
+//        }
+//    }
 
     private enum class State {
         PREVIOUS,

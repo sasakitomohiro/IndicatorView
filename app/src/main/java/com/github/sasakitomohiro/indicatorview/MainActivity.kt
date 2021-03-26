@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         binding.indicator.count = 20
         binding.indicator.maxVisibleCount = 8
         binding.indicator.doOnLayout {
-            binding.indicator.selectedIndex = 0
+            binding.indicator.currentIndex = 0
         }
         setCount(0)
         binding.prev.setOnClickListener {
