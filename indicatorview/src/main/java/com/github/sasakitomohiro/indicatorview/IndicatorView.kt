@@ -203,6 +203,10 @@ class IndicatorView @JvmOverloads constructor(
         when (state) {
             State.PREVIOUS -> {
                 if (maxVisibleCount == 0 || count < maxVisibleCount) return
+                if (visibleIndex in 0 until maxVisibleCount) {
+                    visibleIndex--
+                    return
+                }
                 cells.forEach {
                     with(it.animate()) {
                         isAnimating.set(true)
@@ -216,6 +220,10 @@ class IndicatorView @JvmOverloads constructor(
             }
             State.NEXT -> {
                 if (maxVisibleCount == 0 || count < maxVisibleCount) return
+                if (maxVisibleCount - 2 > visibleIndex) {
+                    visibleIndex++
+                    return
+                }
                 cells.forEach {
                     with(it.animate()) {
                         isAnimating.set(true)
