@@ -198,7 +198,6 @@ class IndicatorView @JvmOverloads constructor(
         }
 
         cells.getOrNull(currentIndex)?.isSelected = true
-        if (currentIndex == 0) return
 
         when (state) {
             State.PREVIOUS -> {
