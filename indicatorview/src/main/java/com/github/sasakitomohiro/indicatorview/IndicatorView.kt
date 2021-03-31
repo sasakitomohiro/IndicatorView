@@ -135,16 +135,12 @@ class IndicatorView @JvmOverloads constructor(
 
     fun setInterpolator(interpolator: Interpolator) {
         animationInterpolator = interpolator
-        cells.forEach {
-            it.animate().interpolator = interpolator
-        }
+        addIndicatorCell()
     }
 
     fun setAnimationDuration(duration: Long) {
         animationDuration = duration
-        cells.forEach {
-            it.animate().duration = duration
-        }
+        addIndicatorCell()
     }
 
     private fun initialize() {
@@ -182,6 +178,7 @@ class IndicatorView @JvmOverloads constructor(
                 layoutParams = cellLayoutParams
                 backgroundTintList = colorStateList
                 animate().interpolator = animationInterpolator
+                animate().duration = animationDuration
             }
             cells.add(cell)
             addView(cell)
