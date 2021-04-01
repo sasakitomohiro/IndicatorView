@@ -204,16 +204,7 @@ class IndicatorView @JvmOverloads constructor(
                     visibleIndex--
                     return
                 }
-                cells.forEach {
-                    with(it.animate()) {
-                        isAnimating.set(true)
-                        translationX(it.translationX + cellWidth + cellMargin)
-                        withEndAction {
-                            isAnimating.set(false)
-                        }
-                        start()
-                    }
-                }
+                move(cellWidth + cellMargin)
             }
             State.NEXT -> {
                 if (maxVisibleCount == 0 || count < maxVisibleCount) return
@@ -221,16 +212,7 @@ class IndicatorView @JvmOverloads constructor(
                     visibleIndex++
                     return
                 }
-                cells.forEach {
-                    with(it.animate()) {
-                        isAnimating.set(true)
-                        translationX(it.translationX - cellWidth - cellMargin)
-                        withEndAction {
-                            isAnimating.set(false)
-                        }
-                        start()
-                    }
-                }
+                move(-cellWidth - cellMargin)
             }
             State.NONE -> {
                 // no-op
@@ -281,6 +263,19 @@ class IndicatorView @JvmOverloads constructor(
 //            }
 //        }
 //    }
+
+    private fun move(translationX: Int) {
+        cells.forEach {
+            with(it.animate()) {
+                isAnimating.set(true)
+                translationX(it.translationX + translationX)
+                withEndAction {
+                    isAnimating.set(false)
+                }
+                start()
+            }
+        }
+    }
 
     private enum class State {
         PREVIOUS,
