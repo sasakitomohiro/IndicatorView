@@ -78,6 +78,7 @@ class IndicatorView @JvmOverloads constructor(
 
     init {
         orientation = HORIZONTAL
+        clipChildren = false
     }
 
     override fun setOrientation(orientation: Int) {
