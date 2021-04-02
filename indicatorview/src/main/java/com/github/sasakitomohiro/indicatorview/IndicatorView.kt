@@ -201,19 +201,30 @@ class IndicatorView @JvmOverloads constructor(
         when (state) {
             State.PREVIOUS -> {
                 if (maxVisibleCount == 0 || count < maxVisibleCount) return
+
+                val indexDiff = prevIndex - currentIndex
+//                val visibleIndexDiff = if (visibleIndex - indexDiff >= 0) visibleIndex - indexDiff else 0
+                val moveCount = if (visibleIndex - indexDiff >= 0) indexDiff else visibleIndex + 1
                 if (visibleIndex in 1 until maxVisibleCount) {
-                    visibleIndex--
+                    visibleIndex = if (visibleIndex - indexDiff >= 0) visibleIndex - indexDiff else 0
+//                    visibleIndex--
                     return
                 }
-                move(cellWidth + cellMargin)
+                move((cellWidth + cellMargin) * moveCount)
             }
             State.NEXT -> {
                 if (maxVisibleCount == 0 || count < maxVisibleCount) return
+
+                val indexDiff = currentIndex - prevIndex
+
+                val moveCount = if (visibleIndex + indexDiff < maxVisibleCount) indexDiff else maxVisibleCount - visibleIndex
+
                 if (maxVisibleCount - 1 > visibleIndex) {
-                    visibleIndex++
+                    visibleIndex = if (visibleIndex + indexDiff < maxVisibleCount) visibleIndex + indexDiff else maxVisibleCount - 1
+//                    visibleIndex++
                     return
                 }
-                move(-cellWidth - cellMargin)
+                move((-cellWidth - cellMargin) * moveCount)
             }
             State.NONE -> {
                 // no-op
