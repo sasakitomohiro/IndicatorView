@@ -148,6 +148,7 @@ class IndicatorView @JvmOverloads constructor(
         removeAllViews()
         cells.clear()
         currentIndex = 0
+        visibleIndex = 0
     }
 
     private fun addIndicatorCell() {
@@ -200,7 +201,7 @@ class IndicatorView @JvmOverloads constructor(
         when (state) {
             State.PREVIOUS -> {
                 if (maxVisibleCount == 0 || count < maxVisibleCount) return
-                if (visibleIndex in 0 until maxVisibleCount) {
+                if (visibleIndex in 1 until maxVisibleCount) {
                     visibleIndex--
                     return
                 }
@@ -208,7 +209,7 @@ class IndicatorView @JvmOverloads constructor(
             }
             State.NEXT -> {
                 if (maxVisibleCount == 0 || count < maxVisibleCount) return
-                if (maxVisibleCount - 2 > visibleIndex) {
+                if (maxVisibleCount - 1 > visibleIndex) {
                     visibleIndex++
                     return
                 }
